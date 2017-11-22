@@ -1,28 +1,26 @@
 def score(game):
     result = 0
     frame = 1
-    in_first_half = True
-    for i in range(len(game)):
-        if game[i] == '/':
-            result += 10 - get_value(game[i-1])
-        else:
-            result += get_value(game[i])
-        if frame < 10 and get_value(game[i]) == 10:
-            if game[i] == '/':
-                result += get_value(game[i + 1])
-            elif game[i] == 'X' or game[i] == 'x':
-                result += get_value(game[i + 1])
-                if game[i + 2] == '/':
-                    result += 10 - get_value(game[i + 1])
+    first_roll_in_round = True
+    for current_roll in range(len(game)):
+        result += get_value(game[current_roll])
+        if frame < 10 and get_value(game[current_roll]) == 10:
+            if game[current_roll] == '/':
+                result += get_value(game[current_roll + 1]) - get_value(game[current_roll-1])
+            elif game[current_roll] == 'X' or game[current_roll] == 'x':
+                result += get_value(game[current_roll + 1])
+                if game[current_roll + 2] == '/':
+                    result += 10 - get_value(game[current_roll + 1])
                 else:
-                    result += get_value(game[i + 2])
-        if in_first_half is True:
-            in_first_half = False
+                    result += get_value(game[current_roll + 2])
+            
+        if first_roll_in_round is True:
+            first_roll_in_round = False
         else:
             frame += 1
-            in_first_half = True
-        if game[i] == 'X' or game[i] == 'x':
-            in_first_half = True
+            first_roll_in_round = True
+        if game[current_roll] == 'X' or game[current_roll] == 'x':
+            first_roll_in_round = True
             frame += 1
     return result
 
