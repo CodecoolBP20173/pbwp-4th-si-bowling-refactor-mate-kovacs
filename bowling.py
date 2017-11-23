@@ -1,40 +1,53 @@
 def score(game):
+    MAX_FRAME = 10
     result = 0
     frame = 1
     first_roll_in_round = True
     for current_roll in range(len(game)):
         result += get_value(game[current_roll])
-        if frame < 10 and get_value(game[current_roll]) == 10:
-            if game[current_roll] == '/':
-                result += get_value(game[current_roll + 1]) - get_value(game[current_roll-1])
-            elif game[current_roll] == 'X' or game[current_roll] == 'x':
-                result += get_value(game[current_roll + 1])
-                if game[current_roll + 2] == '/':
-                    result += 10 - get_value(game[current_roll + 1])
-                else:
-                    result += get_value(game[current_roll + 2])
-            
-        if first_roll_in_round is True:
+        result = multi_roll_corrections(frame, game, current_roll, result, MAX_FRAME)
+
+        if first_roll_in_round:
             first_roll_in_round = False
         else:
             frame += 1
             first_roll_in_round = True
-        if game[current_roll] == 'X' or game[current_roll] == 'x':
+        if is_strike(game[current_roll]):
             first_roll_in_round = True
             frame += 1
     return result
 
 
-def get_value(char):
-    if char == '1' or char == '2' or char == '3' or \
-       char == '4' or char == '5' or char == '6' or \
-       char == '7' or char == '8' or char == '9':
-        return int(char)
-    elif char == 'X' or char == 'x':
+def multi_roll_corrections(frame, game, current_roll, result, game_length):
+    if frame < game_length and get_value(game[current_roll]) == 10:
+        if game[current_roll] == '/':
+            result += get_value(game[current_roll + 1]) - get_value(game[current_roll - 1])
+        elif is_strike(game[current_roll]):
+            result += get_value(game[current_roll + 1])
+            if game[current_roll + 2] == '/':
+                result += get_value(game[current_roll]) - get_value(game[current_roll + 1])
+            else:
+                result += get_value(game[current_roll + 2])
+    return result
+
+
+def get_value(roll_value):
+    if roll_value == '1' or roll_value == '2' or roll_value == '3' or \
+       roll_value == '4' or roll_value == '5' or roll_value == '6' or \
+       roll_value == '7' or roll_value == '8' or roll_value == '9':
+        return int(roll_value)
+    elif is_strike(roll_value):
         return 10
-    elif char == '/':
+    elif roll_value == '/':
         return 10
-    elif char == '-':
+    elif roll_value == '-':
         return 0
     else:
         raise ValueError()
+
+
+def is_strike(roll_value_sign):
+    if roll_value_sign.lower() == 'x':
+        return True
+    else:
+        return False
