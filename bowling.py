@@ -1,4 +1,16 @@
 def score(game):
+    """Calculates the score of a player in a 10 round bowling game from a list of characters, that \
+    represent each roll.\n
+    Argument: game - a string (list of characters) where digits represent the number of knocked pins, \
+    "/" represents a spare, "X" or "x" represent a strike and "-" represents a miss.\n
+    Return: an integer number of the total score that the series of rolls worth.\n
+    Logic of the calculation:\n
+    For every roll the point value of the current roll is added to the score. Then if spare or strike \
+    happened, the program makes the necessary corrections. Except for the last frame, because of the \
+    extra rolls, that are handled by simple rolls and their value is just added to the score (see \
+    before). Important to note that this could be a major design flaw in the program, since this \
+    logic does not stricktly follow the way to calculate the score in a bowling game, but the two \
+    results merely coincide."""
     GAME_LENGTH = 10
     result = 0
     frame = 1
@@ -7,15 +19,11 @@ def score(game):
         result += get_value(game[current_roll])
         if is_spare(game[current_roll]) or is_strike(game[current_roll]):
             result += correction_for_spare_and_strike(frame, game, current_roll, GAME_LENGTH)
-
-        if first_roll_in_frame:
-            first_roll_in_frame = False
+        if not first_roll_in_frame or is_strike(game[current_roll]):
+            frame += 1
+            first_roll_in_frame = True
         else:
-            frame += 1
-            first_roll_in_frame = True
-        if is_strike(game[current_roll]):
-            first_roll_in_frame = True
-            frame += 1
+            first_roll_in_frame = False
     return result
 
 
